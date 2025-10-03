@@ -1,0 +1,11 @@
+{
+  "context": {
+    "files": [
+      "README.md",
+      "CLAUDE.md",
+      "pyproject.toml",
+      "src/server.py",
+      "src/organizer.py"
+    ]
+  }
+}
