@@ -6,7 +6,7 @@ This is an **MCP learning project** focused on understanding the Model Context P
 
 ## General Standards
 
-See [CODING_STANDARDS.md](./CODING_STANDARDS.md) for implementation and documentation standards that apply to all projects.
+See [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) for implementation and documentation standards that apply to all projects.
 
 ## Project-Specific Architecture
 
