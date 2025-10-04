@@ -12,7 +12,7 @@ This separation makes the code more testable and reusable.
 
 import os
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class FileOrganizer:
@@ -31,7 +31,7 @@ class FileOrganizer:
         "Code": [".py", ".js", ".java", ".cpp", ".go"],
     }
 
-    def __init__(self, desktop_path: str = None):
+    def __init__(self, desktop_path: Optional[str] = None):
         """
         Initialize the FileOrganizer.
 
