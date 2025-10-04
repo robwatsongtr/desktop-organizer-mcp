@@ -89,6 +89,20 @@ async def list_tools() -> list[Tool]:
                 "required": ["filename"],
             },
         ),
+        Tool(
+            name="organize_things_from_desktop",
+            description="Organize files from the things_from_desktop folder by moving them into category folders on Desktop",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "dry_run": {
+                        "type": "boolean",
+                        "description": "If true, preview changes without actually moving files",
+                        "default": False,
+                    },
+                },
+            },
+        ),
     ]
 
 
@@ -175,6 +189,14 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             type="text",
             text=f"File: {filename}\nCategory: {category}"
         )]
+
+    elif name == "organize_things_from_desktop":
+        dry_run = arguments.get("dry_run", False)
+
+        # TODO: Implement organize_things_folder method
+        message = organizer.organize_things_folder(dry_run=dry_run)
+
+        return [TextContent(type="text", text=message)]
 
     # Fallback if an unknown tool name is requested (shouldn't happen normally)
     return [TextContent(

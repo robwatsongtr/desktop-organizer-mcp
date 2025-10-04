@@ -10,7 +10,6 @@ of concerns:
 This separation makes the code more testable and reusable.
 """
 
-import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -41,6 +40,7 @@ class FileOrganizer:
         if desktop_path is None:
             desktop_path = str(Path.home() / "Desktop")
         self.desktop_path = Path(desktop_path)
+        self.things_folder_path = self.desktop_path / "things_from_desktop"
 
     def categorize_file(self, filename: str) -> str:
         """
@@ -65,9 +65,9 @@ class FileOrganizer:
 
         return "Others"
 
-    def get_files_by_category(self) -> Dict[str, List[str]]:
+    def get_files_by_category(self, folder: str) -> Dict[str, List[str]]:
         """
-        Group all files on the Desktop by category.
+        Group all files on the Desktop or things_from_desktop folder by category.
 
         Returns:
             Dictionary mapping category names to lists of filenames
@@ -76,14 +76,16 @@ class FileOrganizer:
         Note:
             - Ignores hidden files (those starting with ".")
             - Ignores directories
-            - Returns empty dict if Desktop doesn't exist
+            - Returns empty dict if folder doesn't exist
         """
         categorized_files: Dict[str, List[str]] = {}
 
-        if not self.desktop_path.exists():
+        folder_path = self.desktop_path if folder == 'Desktop' else self.things_folder_path
+
+        if not folder_path.exists():
             return categorized_files
 
-        for item in self.desktop_path.iterdir():
+        for item in folder_path.iterdir():
             if item.is_file() and not item.name.startswith("."):
                 category = self.categorize_file(item.name)
                 if category not in categorized_files:
@@ -102,7 +104,7 @@ class FileOrganizer:
         Returns:
             A human-readable string describing what happened (or would happen)
         """
-        categorized = self.get_files_by_category()
+        categorized = self.get_files_by_category('Desktop')
 
         if not categorized:
             return "No files to organize on Desktop."
@@ -142,3 +144,56 @@ class FileOrganizer:
             result += "\n\n*Run with dry_run=false to actually move the files.*"
 
         return result
+
+    def organize_things_folder(self, dry_run: bool = False) -> str:
+        """
+        Organize files from the things_from_desktop folder into category folders on Desktop.
+
+        Args:
+            dry_run: If True, simulates the organization without moving files.
+
+        Returns:
+            A human-readable string describing what happened (or would happen)
+        """
+        categorized = self.get_files_by_category('things_from_desktop')
+
+        if not categorized:
+            return "No files to organize in 'things_from_desktop' folder."
+
+        message_lines = []
+        total_files = 0
+
+        for category, files in categorized.items():
+            if not files:
+                continue
+
+            category_folder = self.desktop_path / category
+
+            if not dry_run:
+                category_folder.mkdir(exist_ok=True)
+
+            for filename in files:
+                source = self.things_folder_path / filename
+                destination = category_folder / filename
+
+                if not dry_run:
+                    try:
+                        source.rename(destination)
+                    except Exception as e:
+                        message_lines.append(f"❌ Error moving {filename}: {e}")
+                        continue
+
+                message_lines.append(f"  • {filename} → {category}/")
+                total_files += 1
+
+        mode = "DRY RUN - Preview" if dry_run else "✓ Organization Complete"
+        result = f"{mode}\n\n"
+        result += "\n".join(message_lines)
+        result += f"\n\nTotal: {total_files} files"
+
+        if dry_run:
+            result += "\n\n*Run with dry_run=false to actually move the files.*"
+
+        return result
+
+
