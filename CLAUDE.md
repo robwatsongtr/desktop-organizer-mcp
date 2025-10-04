@@ -1,13 +1,27 @@
 # Claude Code Guidelines
 
-## Implementation Standards
+## Project Purpose
 
-- **Granular implementation**: Only implement one testable thing at a time. 
-    
-- **Separation of concerns**: Maintain clear separation in both files and directories.
+This is an **MCP learning project** focused on understanding the Model Context Protocol. The codebase is intentionally simplified to highlight MCP concepts rather than complex business logic.
 
-- **Clean code**: Keep code as clean as possible.
+## General Standards
 
-- **Short functions**: Keep methods/functions as short as possible.
+See [CODING_STANDARDS.md](./CODING_STANDARDS.md) for implementation and documentation standards that apply to all projects.
 
-- **Use classes**: Organize functionality with classes to reduce code duplication if possible. 
+## Project-Specific Architecture
+
+- **Separation of concerns**:
+  - `server.py`: MCP protocol communication
+  - `organizer.py`: Business logic (file operations)
+
+## MCP-Specific Guidelines
+
+- **No stdout pollution**: Never use `print()` in MCP servers - it corrupts the protocol.
+  - ✅ Use: `print(..., file=sys.stderr)` for debugging
+  - ✅ Use: `logging` configured to stderr
+
+- **Tool descriptions**: Make tool descriptions clear and specific - the LLM uses these to decide when to call tools.
+
+- **Simple return types**: Prefer simple string messages over complex data structures when possible.
+
+- **Keep focus on MCP**: Simplify business logic to highlight MCP protocol patterns. 
